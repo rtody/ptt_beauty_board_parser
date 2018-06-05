@@ -56,7 +56,20 @@ url = 'https://www.ptt.cc/bbs/beauty/index.html'
 # Updated status
 updated = False
 
-while (not updated):
+# Parse method
+method = int(input('Select parse method: (1) AUTO (2) Manully choose page number: '))
+
+if (method != 1 and method != 2):
+    print('Wrong input, select AUTO mode instead')
+    method = 1
+
+if (method == 2):
+    pages = int(input('How many pages: '))  # Manaul
+else:
+    pages = True    # AUTO
+
+# Main program
+while (pages):
     res = requests.get(url)
     soup = BeautifulSoup(res.text, 'html.parser')
 
@@ -67,6 +80,12 @@ while (not updated):
         if link:
             parse_images(link)
 
-    # Get the previous page (上一頁) 
+    # Get the previous page (上一頁)
     controls = soup('a', {'class': 'btn wide'})
     url = ptt_url + controls[1].get('href', None)
+
+    if method == 1:     # AUTO update - termination on updated status
+        if updated:
+            break
+    elif method == 2:   # Manual update - termination depends on page value
+        pages = pages -1
